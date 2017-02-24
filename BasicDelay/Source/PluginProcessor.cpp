@@ -48,6 +48,65 @@ const String BasicDelayAudioProcessor::getName() const
     return JucePlugin_Name;
 }
 
+int BasicDelayAudioProcessor::getNumParameters()
+{
+	return kNumParameters;
+}
+
+float BasicDelayAudioProcessor::getParameter(int index)
+{
+	// This method will be called by the host, probably on the audio thread, so
+	// it's absolutely time-critical. Don't use critical sections or anything
+	// UI-related, or anything at all that may block in any way!
+	switch (index)
+	{
+	case kDelayTimeParam: return delayTime;
+	case kFeedbackParam: return feedback;
+	default: return 0.0f;
+}
+}
+
+void BasicDelayAudioProcessor::setParameter(int index, float newValue)
+{
+	// This method will be called by the host, probably on the audio thread, so
+	// it's absolutely time-critical. Don't use critical sections or anything
+	// UI-related, or anything at all that may block in any way!
+	switch (index)
+	{
+	case kDelayTimeParam:
+		delayTime = newValue;
+		// IMPORTANT: calculate the position of the readIndex relative to the write
+		// i.e. the delay time in samples
+		readIndex = (int)(writeIndex - (delayTime * delayBufferLength)
+			+ delayBufferLength) % delayBufferLength;
+		break;
+	case kFeedbackParam:
+		feedback = newValue;
+		break;
+	default:
+		break;
+}
+}
+
+
+const String BasicDelayAudioProcessor::getParameterName(int index)
+{
+	switch (index)
+	{
+	case kDelayTimeParam: return "delay time";
+	case kFeedbackParam: return "feedback";
+	default: break;
+	}
+	return String::empty;
+}
+
+
+const String BasicDelayAudioProcessor::getParameterText(int index)
+{
+	return String(getParameter(index), 2);
+}
+
+
 bool BasicDelayAudioProcessor::acceptsMidi() const
 {
    #if JucePlugin_WantsMidiInput
