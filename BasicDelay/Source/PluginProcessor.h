@@ -21,6 +21,9 @@ class BasicDelayAudioProcessor  : public AudioProcessor
 {
 public:
     //==============================================================================
+	float delayTime;  // set up to store values from slider controls
+	float feedback;
+
     BasicDelayAudioProcessor();
     ~BasicDelayAudioProcessor();
 
@@ -58,6 +61,12 @@ public:
 
 private:
     //==============================================================================
+	AudioSampleBuffer delayBuffer;
+	int delayBufferLength;
+	int readIndex;
+	int writeIndex;
+
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (BasicDelayAudioProcessor)
 };
 
